@@ -159,27 +159,26 @@ As the analyses on the full HL-LHC dataset will form the legacy measurement of t
 % DELETE CMS who is telling every funding agency how good they are at that (and reaping rewards)
 
 The larger data volumes produced by the HL-LHC demand more efficient use of storage resources, which will otherwise grow in importance as a limiting factor for the ATLAS physics program.
-This limitation can be overcome with data-taking techniques that produce reduced data formats, where only subsets of the full event information are saved in dedicated data streams, and/or data reduction is performed online in the trigger computing farm. CMS and LHCb have significant efforts in these directions~\cite{??,HSF}.
+This limitation can be overcome with data-taking techniques and end-to-end analysis workflows that use reduced data formats, where only subsets of the full event information are saved in dedicated data streams, and/or data reduction is performed online in the trigger computing farm.
+This enables a variety of physics analyses that is infeasible using conventional triggers due to high data taking rates.
+Data analysis for the HL-LHC is evolving toward a hybrid of traditional and reduced-format approaches, with significant efforts in these directions at ATLAS, CMS, and LHCb~\cite{??,HSF}.
 
-One technique of this kind already developed in ATLAS is called Trigger-object Level Analysis (TLA)~\cite{EXOT-2016-20}~\footnote{This technique is called Turbo stream by the LHCb Collaboration~\cite{Aaij:2016rxn}, Data Scouting by the CMS Collaboration~\cite{Khachatryan:2016ecr}}. In TLA, physics objects (e.g. jets, photons, electrons...) are reconstructed in real-time within the HLT and only this data reduction is saved for offline analysis. 
-Care must be taken that the trigger-level reconstruction does not exceed available CPU resources, but the consequent reduction in bandwidth allows triggering on much higher event rates than otherwise possible. So far, this technique has been successfully used to search for low-rate dijet resonance signals with high-rate backgrounds~\cite{TLAPRL}.
+One technique of this kind already developed in ATLAS is called Trigger-object Level Analysis (TLA)~\cite{EXOT-2016-20}~\footnote{This technique is called Turbo stream by the LHCb Collaboration~\cite{Aaij:2016rxn}, Data Scouting by the CMS Collaboration~\cite{Khachatryan:2016ecr}}. In TLA, physics objects (e.g. jets, photons, electrons...) are reconstructed in real-time within the HLT. Only this reduced data is saved for offline analysis. 
+Care must be taken that the trigger-level reconstruction does not exceed available CPU resources, but the consequent reduction in bandwidth allows triggering on much higher event rates than otherwise possible. So far, this technique has been successfully used to search for low-rate dijet resonance signals with high-rate backgrounds~\cite{TLAPRL}. With the expanded capabilities offered by the TDAQ upgrade, the TLA technique will offer a powerful alternative to raising analysis thresholds at the HL-LHC.
 
-Another possibility is Partial Event Building (PEB), where bandwidth can be reduced by recording only a subset of raw detector information in selected regions of interest, e.g. nearby objects reconstructed directly at the HLT.
-In Run-2, PEB was restricted to calibration and $B$-physics~\cite{TRIG-2016-01}. In Run-3, it will be extended to more use cases objects. 
-%Note: we plan to do this, but we haven't yet written all the code yet... 
-This technique can be useful for processes where new particles leave complex non-standard signals in the detector, and where the distinctive features of the signals are too time-consuming to reconstruct in the HLT. The combination of TLA and PEB can mitigate storage and processing limitations and enable reconstruction of the distinctive signal features at a later processing stage where more resources are available. 
+Another technique is Partial Event Building (PEB), where trigger bandwidth can be reduced by recording only a subset of raw detector information in selected regions of interest, e.g. nearby objects reconstructed directly in the Event Filter.
+This technique can be useful for processes where new particles leave complex non-standard signals in the detector, and where the distinctive features of the signals are too time-consuming to reconstruct in the HLT. In Run-2, PEB was restricted to calibration and $B$-physics~\cite{TRIG-2016-01}.
+In Run-3, it will be extended to more use cases objects. %Note: we plan to do this, but we haven't yet written all the code yet... 
+For example, if tracking information needs to be stored for e.g. performing precision $b-$tagging with offline calibration, this can be done using the PEB technique for only the jets of interest.
+
+The combination of TLA and PEB can mitigate storage and processing limitations and enable reconstruction of the distinctive signal features at a later processing stage where more resources are available.
 When using TLA+PEB, we foresee multiple working points, to be optimized depending on the application and detector subset desired. The event size ranges from that of the format used for the Run-2 trigger-level analysis of dijets (factor of $\approx200$ smaller), to full-detector information in the regions of the detector corresponding to prominent objects (factors of $\approx 2-4$ smaller). %CD: these numbers come from a private study but it is possible that the muon trigger paper will come out before the CDR so we can cite that
+
+%The TLA-only workflow has so far been running in the shadow of traditional workflow, both in terms of CPU and in terms of storage. In the future, the addition of more complex objects to reconstruct at the HLT as well as the addition of information in the reduced event data format will expand analysis prospects at a fraction of the cost of traditional workflows, but still not be completely cost-free. For this reason, the physics motivation and resource needs will need to be considered in the resource planning of the overall ATLAS physics program.
 
 %Generally searches using data recorded with these techniques do not use simulation for their background estimation. This is because the main advantage for a search using the TLA technique is the reduction of statistical uncertainties on the background estimation to a negligible level, and the systematic uncertainties systematic uncertainties on the background estimation are minimized using data-driven techniques. Sufficient simulated data is still required to derive reliable calibration for the physics objects used in the searches. 
 
-\subsubsection{Reconstruction, calibration and analysis workflow for TLA and TLA+PEB events}
-
-\textbf{Reconstruction and calibration} 
-
-%Both TLA and TLA+PEB techniques require efficient reconstruction and calibration techniques, since part of the event processing occurs on constrained computing resources.
-
 Using HLT objects for analysis requires that the overall trigger reconstruction performs well even in the pile-up conditions foreseen at the HL-LHC. 
-Nevertheless, the algorithms used to reconstruct trigger objects must be fast and must not contribute significantly to the overall trigger computing resources, so that only a small fraction of the existing resources is used. 
 As has been seen during the development of the dijet TLA in Run-2, this motivates continued improvement of the trigger software, benefitting the entire experiment.
 
 The main advantage for searches and measurements that use the TLA technique is the much larger dataset that can be collected. 
@@ -200,27 +199,39 @@ The application of TLA-motivated improved calibration constants at the HLT durin
 %\vskip-5pt
 \end{figure}
 
-%maybe this is too big picture? but hey, a plot! 
-%Differences in the energy scale of HLT and offline objects also lead to inefficiencies in the trigger selection, as events that should pass the %% trigger are rejected due to miscalibration in the HLT. 
-%% As an example, the minimum $p_{\rm{T}}$ threshold applied to jets used in physics analysis is set to be higher than the HLT threshold due to these differences, leading to a substantial waste in terms of events that are recorded but not used for analysis, as shown in Fig.~\ref{fig:wastedRate}. 
+Nevertheless, the algorithms used to reconstruct trigger objects must be fast and must not contribute significantly to the overall trigger computing resources, so that only a small fraction of the computing resources is used.
+The physics motivation and resource needs will need to be considered in the resource planning of the overall ATLAS physics program.
 
-If tracking information needs to be stored for e.g. performing precision $b-$tagging, this can be done using the PEB technique only behind the most energetic jets, so that the impact on storage resources is not as large as for full events. 
-Additionally, corrections to equalize the energy response across the detector using the balance of forward physics objects to central physics objects could be derived using a quasi-real-time calibration of the data, if calorimeter or LHC conditions were expected to change on a short timescale. 
 
-\textbf{Analysis workflow for TLA and TLA+PEB}
 
-In order to enable validation of the performance of TLA and TLA+PEB physics objects, it is necessary to retain an event format that includes both regular physics objects and objects presents in the reduced data formats, for a subset of the data.  
 
-%edits by Teng Jian Khoo
-TLA and TLA+PEB end-to-end analysis workflows enable a variety of physics analyses that are infeasible using conventional triggers due to high data taking rates. The TLA-only workflow has so far been running in the shadow of traditional workflow, both in terms of CPU and in terms of storage. In the future, the addition of more complex objects to reconstruct at the HLT as well as the addition of information in the reduced event data format will expand analysis prospects at a fraction of the cost of traditional workflows, but still not be completely cost-free. For this reason, the physics motivation and resource needs will need to be considered in the resource planning of the overall ATLAS physics program.
 
-%Q for Lukas/Alison/Gordon: this section is pretty bare but I could add a diagram or write more, what do we want to do here? 
+%% \subsubsection{Reconstruction, calibration and analysis workflow for TLA and TLA+PEB events}
 
-%Other things that could be added: 
-% More of a resource discussion...
-% Advantages of doing this beyond storage: code optimization, avoiding duplication, reduced waste of data (this is calibration and probably belongs to the analysis section?)
-% Downsides: need more resources if everyone wants their own PEB so one needs to consider what gets saved carefully depending on the physics case
-% More details on how one could do reconstruction in partial regions (= learn from trigger)
+%% \textbf{Reconstruction and calibration} 
+
+%% %Both TLA and TLA+PEB techniques require efficient reconstruction and calibration techniques, since part of the event processing occurs on constrained computing resources.
+
+
+%% %maybe this is too big picture? but hey, a plot! 
+%% %Differences in the energy scale of HLT and offline objects also lead to inefficiencies in the trigger selection, as events that should pass the %% trigger are rejected due to miscalibration in the HLT. 
+%% %% As an example, the minimum $p_{\rm{T}}$ threshold applied to jets used in physics analysis is set to be higher than the HLT threshold due to these differences, leading to a substantial waste in terms of events that are recorded but not used for analysis, as shown in Fig.~\ref{fig:wastedRate}. 
+
+%% Additionally, corrections to equalize the energy response across the detector using the balance of forward physics objects to central physics objects could be derived using a quasi-real-time calibration of the data, if calorimeter or LHC conditions were expected to change on a short timescale. 
+
+%% \textbf{Analysis workflow for TLA and TLA+PEB}
+
+%% In order to enable validation of the performance of TLA and TLA+PEB physics objects, it is necessary to retain an event format that includes both regular physics objects and objects presents in the reduced data formats, for a subset of the data.  
+
+%% %edits by Teng Jian Khoo
+
+%% %Q for Lukas/Alison/Gordon: this section is pretty bare but I could add a diagram or write more, what do we want to do here? 
+
+%% %Other things that could be added: 
+%% % More of a resource discussion...
+%% % Advantages of doing this beyond storage: code optimization, avoiding duplication, reduced waste of data (this is calibration and probably belongs to the analysis section?)
+%% % Downsides: need more resources if everyone wants their own PEB so one needs to consider what gets saved carefully depending on the physics case
+%% % More details on how one could do reconstruction in partial regions (= learn from trigger)
 
 \subsection{Impact}
 
