@@ -1,0 +1,72 @@
+
+Here are some of the extensions and evolutions being contemplated
+for the event data model.  These are mainly aiming towards having
+a more efficient representation, especially for GPUs and other
+accelerators.
+
+\begin{itemize}
+\item The objects produced to be stored in AODs are in xAOD format,
+  but many of the detector-specific and intermediate objects
+  are not.  Some of these may need to be migrated to xAOD.
+
+\item Currently, each xAOD variable is stored in a std::vector.  This means
+  that each variable is stored in contiguous memory, but there is no relation
+  between the allocations for different variables of the same object.
+  It may be desirable to have more control over this; for example to be able
+  to store all variables for a given object in a single contiguous
+  block of memory.  This can be done transparently to the EDM clients,
+  but would require changes to the xAOD static auxiliary store classes.
+  There are likely also implications for persistency and backwards
+  compatibility.
+
+\item Many xAOD variables are simple types, but there are also some that
+  use std::vector and ElementLink.  These, especially std::vector, are not
+  so friendly for GPUs.  An alternate representation may be more
+  efficient.  However, this would very likely affect client code.
+  {\it \color{blue} Internal reconstruction EDM often not xAOD}
+
+\item DataVector<T> acts like vector<T*>, and client code typically accesses
+  the data through the pointers to the T instances.  However, this involves
+  an extra pointer dereference; among other things, this prevents any
+  vectorization.  This will also not be efficient for GPUs.
+
+  From the start, it was imagined that variables could be accessed
+  through the DataVector class directly, without requiring the additional
+  dereference.  However, there has not been any support for this in the
+  xAOD layer, and no client code currently uses this.  This should be
+  addressed along with the update to interfaces discussed below.
+
+\item The interfaces provided by DataVector and the xAOD classes
+  are likely too complicated to be implemented as-is on GPUs and
+  related architectures.  Some prototyping has been done on more
+  streamlined interfaces.  However, a design should be settled
+  on and integrated with the offine code in a compatible way,
+  and in a way in which variable definitions do not need to be duplicated.
+
+\item The EDM has always been accessible to python via PyROOT;
+  however, the performance
+  of this is not very good, since every access requires a call from
+  python to C++.
+
+  Prototypes exist of code that expose the underlying vectors used
+  to hold xAOD variables to python more directly, with a class-like
+  wrapper on top.  This is significantly more efficient;
+  however, the current version loses much of the xAOD structure in so doing.
+  It also does not interoperate directly with external python code
+  that operates on numpy objects.
+
+  It may be worth investigating if xAOD objects can be made available to python
+  in a manner which is directly compatible with numpy and which also
+  maintains the xAOD structure and interfaces.
+
+\item In heterogeneous computing, one may need to deal with multiple
+  representations of a data object; for example, one accessible from
+  the CPU and one accessible from a GPU.  Some programming libraries
+  try to hide this, but it may be worth considering if it would
+  be useful to be able to represent alternate versions of the same
+  object in the event store.
+
+\item Many-core systems may also have a non-uniform memory architecture.
+  Making efficient use of such architectures would require being able
+  to better control memory allocations.
+\end{itemize}

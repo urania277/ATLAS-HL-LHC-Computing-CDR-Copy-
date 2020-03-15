@@ -1,0 +1,54 @@
+
+The main challenges facing ATLAS data processing the HL-LHC era are:
+\begin{itemize}
+\item much larger volumes of data due to increasing event sizes and rates
+\item evolving architectures which are becoming increasingly heterogeneous
+\end{itemize}
+It is the mandate of the ATLAS core software to provide all necessary components and tools which will allow our data processing applications to run efficiently in the face of these challenges.
+
+
+\subsection{Framework components}
+
+The central component of the ATLAS multithreaded data processing framework AthenaMT, using the Gaudi task scheduler, relies on the Intel TBB runtime system for mapping tasks to kernel threads. Although the basic functionality of the scheduler is already in place \cite{ishap:2015, ishap:2016}, the scalability of the current solution particularly over heterogeneous architectures is limited by design. In order to overcome this limitation, we plan to design and implement a next generation task scheduler in Gaudi, which will come with a set of advanced features designed to maximize event processing throughput. Such features include: hybrid threading model based on lightweight user-level threads with fast context switches; task-based asynchronous programming model; support for computation offloading; distributed memory computing.
+
+The next generation of HPCs are all based on different accelerator architectures, and future architectures will likely be even more exotic, with the incorporation of FPGAs as well as GPUs. In general the lifetime of an HPC is 5 years, with new centers coming online in a staggered fashion, meaning that new architectures will become available every few years. Given the size of the ATLAS software repository, and the number of available software developers, ATLAS cannot afford to re-write its software stack for every new HPC. Furthermore, even if multiple versions of the code were available for each architecture, the effort to maintain and validate each new version would be onerous. We must instead find portability solutions that permit the same code to run on all architectures. Accelerator hardware manufacturers also realized that to make large code bases portable, the current (mostly) custom accelerator programming solutions will have to be standardised, and even be made part of a future C++ standard. Both NVidia and Intel are actively working with the C++ Standard Committee to try to make their programming interfaces (CUDA and DPC++ respectively) the standard inside C++. The ATLAS Core Software group will have to maintain an active relationship with members of the industry and the C++ Standard Committee itself to be able to chose the software development platform for the ATLAS offline software wisely. This will also require continuing discussions with other experiments on this topic, preferably through the HEP Software Foundation.
+
+Future accelerator-centric platforms bring significant challenges to ATLAS's software and computing, because currently our workflows can run only on CPU-based systems. From the core software perspective one of the key problems we will have to address is how to integrate accelerator programming models (e.g. CUDA, SYCL/DPC++) into our data processing framework, and how to efficiently schedule computations from multithreaded applications to accelerator devices. In the longer term perspective we want to study how a distributed, fine-grained workflow scheduling system can help us run hybrid multithreaded/accelerated workflows on the combined resources comprising multiple experiment-owned CPU clusters and heterogeneous HPC centers. Such a scheduling system would ensure efficient and scalable execution of hundreds of software components of an ATLAS workflow, assigning each one of them to the most appropriate resource. It should also be able to self-tune its schedules to different large-scale computing architectures for maximizing the event processing throughput.
+
+While end-to-end workflows that are suited to accelerators are few and far between in HEP, some exist that are better suited for this than others. Preliminary studies \cite{madgraph} have shown that Event Generation packages such as MadGraph are well suited for executing in the GPU environment, and programs are underway to convert them. Any workflows that spend a significant fraction of time doing machine learning tasks are also ideal for accelerators, and many ML packages have GPU backends that are transparent to the user. Individual tasks that are inherently very parallel in nature, such as track seeding or calorimeter clustering will also function very well on a GPU. In the online environment GPUs can also be effectively used, as long as a significant fraction of the trigger chain is kept on the GPU, minimizing the data conversion and transmission penalties.
+
+Even though end-to-end workflows on the GPU shall make best usage of the hardware, there is no reason that individual Algorithms, be they Reconstruction or Simulation, cannot make good use of GPUs, as long as they do not spend more time converting data structures and transferring them to the GPU than the
+original runtime of the Algorithm. As long as the CPU hardware thread that offloads the GPU Algorithm can be re-tasked to do other work while the kernel is executing on the GPU, the total throughput of the job shall increase due to the latency hiding nature of the framework. Even if just a few slow Algorithms can be converted to use GPUs, major gains in the total throughput can be realized. It should be noted that converting HEP data processing Algorithms to run efficiently on GPUs can be a very complicated task, as the inherent branching and memory access patterns of these types of Algorithms are not well suited to GPU architectures. While core software can enable this task and provide technical assistance, it is beyond the scope of the core software group to do this porting. 
+In order to simplify integration of user kernels with Athena, we must provide infrastructure to 
+\begin{itemize}
+    \item efficiently manage GPU kernel resources such as CUDA streams;
+    \item manage GPU memory, possibly via custom allocators;
+    \item prepare data for offloading from the CPU, and reconvert it when the kernel has completed;
+    \item integrate kernel compilation into the build environment, via CMake directives for CUDA, DPC++, Kokkos, Alpaka, and other languages.
+    \item validate results that are produced by the GPU, as bitwise comparisons with the CPU are impossible due to entirely different code paths, levels of precision, and computational hardware
+\end{itemize}
+
+\subsection{Event Data Model}
+
+In order to make effective use of future computing resources, we will need to evolve the xAOD data model, which was developed for Run 2 and has proved to be very successful. The current interfaces need to be streamlined to be able to better treat the data as arrays of structures. Simplified versions of the EDM classes may need to be defined for use on accelerators; the way the EDM classes are currently defined should be made more structured so that CPU and accelerator versions can be generated from the same definitions.  Many of the variables used in the current data model are simple types, but some are not.  Variables such as vectors will likely need to be migrated to a flat representation.  It may also help to take more control over memory allocation, for example to allow storing all the data for a given collection of objects in a single contiguous region of memory.  Changes along these lines should also make it easier to expose the data to Python as numpy objects, allowing for better integration with the growing Python-based analysis ecosystem, and could also help with enabling access to the data from other compiled languages. Finally, in heterogeneous computing, one may need to deal with multiple representations of an object, for example on the CPU and on an accelerator, so we could consider if these alternate versions should be represented explicitly in the transient event data store.
+
+\subsection{I/O system}
+
+ATLAS uses a very powerful and flexible infrastructure for reading and writing data objects using the Athena framework. While in recent years this infrastructure was in practice only used to read/write physical files using the ROOT I/O system, future data processing requirements may necessitate the addition of other I/O backends as well. Further developments on the Transient/Persistent separation used in the ATLAS I/O system shall allow us to develop efficient ways to deal with new data storage technologies developed for Big Data processing by the industry.
+
+Because of their wider parallelism, offloading to compute accelerators may benefit from processing multiple events concurrently. Within the Athena framework event loop this would require data collection across event contexts, which may be counterproductive to the benefits of offloading. The I/O framework already deals with column-wise compressed data and may be a more efficient location for such data transfer. Tools in this area should be investigated and developed.
+
+In addition to the challenges of providing CPU cycles for HL-LHC processing, we will also need to address the problem of storage shortage. During Run 2, ATLAS has stored all data using lossless compression only and deployed an Analysis model that produced large data duplication; resulting in the primary AOD taking up to 30\% of total storage and the derived AOD using up another 40\%. The situation will improve for Run 3 by changes made to the Analysis model to utilize common, unskimmed data products DAOD\_PHYS and DAOD\_PHYSLITE, for which fast, robust and user-friendly event-selection tools will be provided. This will reduce data duplication and save about 30\% of storage. Furthermore, the possibility of lossy compression is studied and implemented for AOD and DAOD, with the potential of saving another 10-25\% of storage. Other lossy compression techniques using deep learning techniques are also under investigation~\cite{CompressionThesis}.  For HL-LHC, these tools need to be developed even further to ensure that data needs do not exceed the available storage capacity. 
+
+\subsection{Summary}
+
+To summarize, the main research areas of the ATLAS core software group include:
+\begin{itemize}
+    \item Next generation of intra-node and inter-node task scheduling systems;
+    \item Evolution of the event data model;
+    \item Storage optimization;
+    \item Framework support for computation offloading to accelerator devices;
+    \item Portable parallelization solutions.
+\end{itemize}
+
+While some of these areas fall into either conservative or baseline evolution categories, there are couple of items (e.g. inter-node task scheduling, accelerator support by the framework) which, in case of success, can dramatically change the way ATLAS data processing works.

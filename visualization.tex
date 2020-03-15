@@ -1,0 +1,83 @@
+
+% \subsection{Introduction}
+
+Interactive visualization is a key tool in High Energy Physics experiments \cite{ref:atlas-event-visualization}. Not only does interactively visualizing data from particle collisions help in understanding the physics involved in the interactions between fundamental particles; it is also a necessary tool for a number of different tasks in the HEP workflow, from detector development to simulation, reconstruction, physics analysis, and outreach \cite{ref:atlas-public-ed}. %Visualization tools are also used to prepare high-quality and engaging event displays for papers, conferences, announcements, and press releases \cite{atlas-public-ed}. 
+A faithful and uncluttered visualization of the physics objects is essential %to offer 
+to give physicists the right tools to inspect, verify, and debug their data. Physics objects---like tracks, vertexes, hits, or calorimeter cells---have to be clearly rendered, to let users distinguish the interesting ones even in a view where a large number of them are shown. In addition to that, tools to accurately handle them and to navigate through the view have to be offered, to let users focus on specific objects or on certain areas. 
+Moreover, interactive tools like object selection, highlighting, and filtering must be accurate enough to let users pick the right item, to get detailed information about it or to set selective filters.
+%On top of that, users have to be able to set cuts on different variables, to 
+
+In Phase-2, as explained in Section~\ref{sec:reco}, the foreseen increase in the number of simultaneous proton-proton collisions will yield a related increase in the event complexity. The number of physics objects to reconstruct will increase enormously and, with that, the number of objects to be visualized. Thousands of superimposed tracks  and hundreds of very close vertexes will be visible in any given event, besides the other objects. The development of new visualization software  techniques, besides the upgrade to modern technologies, will be vital to properly show such a large number of actors and to correctly interact with them. Without that, it will be very hard, if not impossible, for physicists to visually investigate collision data effectively to debug their collection, reconstruction, and analysis.
+
+
+% In the following of this section, a list of the improvements and developments needed to meet the requirements of Run III and Run IV will be given, with a strategy plan and a timescale.
+
+\subsection{Improvements in the Run III timescale}
+
+A certain number of software and technology updates foreseen for Run IV are planned to be started in a timescale compatible with Run III. That will prepare the path to the further software development for Run IV, while easing visualization in Run III already. 
+
+
+
+%\subsection{Improvement of the visualization of physics objects}
+\paragraph{Improving the visualization of physics objects}
+
+As explained in Section \ref{sec:reco-unconvsig}, a variety of models for New Physics within the (HL-)LHC physics program involve signatures with meta-stable particles and displaced vertexes. 
+Currently, focus has been put in the visualization of the primary vertexes; secondary and displaced vertexes miss a dedicated set of visualization features to show the decay of meta-stable particles in detail and properly isolate it from the environment. Also, visualization of tracks produced at the displaced vertex should be rendered differently and isolated on demand, for detailed inspection. Those new  features will be crucial to check the selection algorithms used for signatures involving meta-stable particles.
+Different types of particle jets also play a key role in many physics models for New Physics. For that, a detailed visualization of the calorimeter activity is essential and dedicated views and tools are needed to let ATLAS physicists verify the jet reconstruction algorithms and the analysis selection cuts. 
+New "Lego" plots and cluster visualization features will be added to the ATLAS event display tools, VP1~\cite{ref:vp1-web} and Atlantis~\cite{ref:atlantis-web} respectively. 
+
+
+%\subsection{Improvement of the Online Event Display for data taking}
+\paragraph{Improving the Online Event Display for data taking}
+
+The "Online Event Display" system running in the ATLAS control room is an essential tool in the context of Data Preparation. It gives the ATLAS shift crew a prompt visual feedback about the data taking. Anomalies or large asymmetries in the distribution of physics objects are quickly spotted, triggering further inspection. The system runs a dedicated reconstruction chain over the experimental data as soon as they are collected and event displays are produced and stored for further inspection. 
+Currently, the system offers 2D views of the collected data, overlaid to a simplified geometry of the detector, created with Atlantis~\cite{ref:atlantis-web}. It is considered important, however, in the context of Data Preparation needs, to update the system with the features offered by another ATLAS event display, VP1~\cite{ref:vp1-web}, to produce 3D views of data, overlaid to an exact copy of the detector geometry, directly taken from the experiment's software framework. This will let ATLAS scientists get a prompt feedback about the correct behaviour of the different parts of the detector. %Also, the additional application will provide additional 3D views to the shifters, with tools useful to visualize problematic data in details.
+For that, the setup of the the Online Event Display system will be updated, to produce filtered data for both the event display applications. Also, pre-defined views will be defined for both applications, to support the activities of the ATLAS control room crew.
+
+
+
+\subsection{A better visualization of geometry volumes for Detector Description}
+
+As explained in Section \ref{sec:detdescr}, the geometry of the ATLAS detector in Run IV will be dramatically different from the current one. Thus, major detector development work is foreseen in the next years to write and update the detector description.% for Run IV; and the plan is to have tools which let developers work outside the experiment's framework Athena as much as possible.  
+To support that, major software development will be needed in the visualization of detector geometry. 
+
+A large number of new developments are foreseen for Run IV in the context of Detector Description visualization. Work is currently ongoing to create visualization tools tailored to geometry volumes. Our vision is to have standalone, interactive tools to inspect, query, and explore the geometry information tree and to handle geometry volumes. For that, a number of new features will have to be developed, such as a dedicated geometry browser to quickly see the structure of the detector description tree in details; interactive tools to quickly get information about a subset of the tree or a single volume on request, ideally both from a list of volumes and by clicking on the 3D view; the ability to filter on volumes' properties (names, materials, shapes, and so forth) to selectively visualize parts of the geometry; the development of a new visualization schema to be able to visualize both mother and children volumes at at he same time; the possibility to interactively modify the shapes in the 3D view and save their representation into a file. %Even if planned for Run IV, the first implementations of the above mentioned tools will be used in Run III as well. 
+The new tools will play a key role in the implementation and debug of the new detector description, letting developers develop it in an efficient workflow with fast visual feedback.
+
+% \begin{itemize}
+%     \item interactive volume filtering
+%     \item interactive selection of volumes
+%     \item better model view (Browser) and further interaction between the model view and the 3D objects
+% \end{itemize}
+
+
+
+
+\subsection{New rendering techniques for very dense environment}
+
+    
+
+In Run IV, the increased pile-up will cause the production of large number of physics objects. The extremely large number of vertexes and tracks will make the visualization of those events hard; in addition to that, picking and selecting the right object in such a dense environment will be extremely difficult, making the interaction of physicists with the physics objects cumbersome. 
+
+The graphical rendering of those objects will play a major role. In such dense events, tracks and vertexes should be rendered with selective techniques, to highlight the interesting ones, or the one on the front of the current view, while hiding or dimming the others. Similar techniques should be applied to effectively display vertexes, when a large number of them are present in the view. Our current visualization tools are not able to do that. 
+
+In other fields of research, like brain studies and medicine, visualization techniques have evolved to let scientists effectively visualize objects in very dense environments. The visualization of those objects shares many of the challenges we will have to face to dynamically and selectively visualize tracks in HL-LHC events. 
+The study of modern rendering techniques and their implementation in our workflow will require the adoption of modern graphics libraries and technology. Thus, development work will be needed to replace the graphics engines used in our current visualization tools with more modern incarnations.
+In parallel, new selection tools will have to be developed, to let physicists correctly identify and interactively pick the right object from the busy environment.
+
+The new tools will be critical to help physicists leverage the ATLAS discovery potential. Without those, it will be very hard to by visually check reconstruction algorithms and physics signatures in busy event data from HL-LHC collisions.
+
+
+
+\subsection{Standalone visualization tools and new technologies}
+
+
+Our current tools follow two approaches: either they are run inside the experiment's framework (VP1~\cite{ref:vp1-web}) to be able to access data directly, but with the disadvantage of having to run on supported platforms and being limited in the use of the software libraries from the experiment's software stack; or, they are standalone programs (\textit{e.g.}, Atlantis~\cite{ref:atlantis-web}) making use of data exporters to get a copy of the data, but with the need of re-running the export step every time new data or are needed or new selection cuts need to be applied to those.
+
+Following the recommendations from HSF~\cite{ref:hsf-cwp-viz}, we will shall explore the possibility of decoupling the visualization of the experimental data from their retrieval and handling.
+A server-client approach will let us keep the ability of accessing and querying data directly from the experiment, while being able to run our visualization tools on many platforms, explore new technologies (like web-based 3D rendering, or Virtual and Augmented Reality) without being limited by the experiment's needs in terms of stability of the software stack, and leverage the potential of the visualization pipelines supported by modern graphics hardware (GPUs). In addition to that, the new architecture will let us use modular, common packages from other HEP experiments and co-develop them (as emphasized in the aforementioned HSF white paper). 
+Some exploratory work has been started already, to develop standalone visualization tools accepting streamed event data, based on web technologies (Phoenix~\cite{ref:phoenix-web}, started in ATLAS and then developed with contributions from other LHC experiments under the aegis of HSF). 
+Major design and development work will be needed to develop a client-server pipeline.
+
+The effort put in the development of the new architecture will return in larger simplicity and flexibility, both in terms of visualization software development and maintenance for the future of the ATLAS experiment.
+

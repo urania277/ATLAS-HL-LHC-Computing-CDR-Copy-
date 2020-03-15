@@ -1,0 +1,116 @@
+\subsection{Trigger and DAQ}
+
+The Phase-II upgrade of the ATLAS Trigger/DAQ (TDAQ) system and its Event Filter (EF) is described in detail in Ref.~\cite{ATLAS-TDR-29}. The EF system processes the events in almost real-time, takes the final trigger decision and assigns events to data streams. The EF farm will be built from commodity CPU servers with the optional addition of accelerators (GPU, FPGA) if they are found to be cost effective. The Dataflow system stores the accepted events in files and publishes them to the offline system. The Dataflow system is able to buffer events for up to 48 hours if needed.
+During non-taking periods the EF farm acts as a standard Grid site and can be used to run e.g. simulation jobs ("Sim@P1").
+
+Based on the current trigger menu draft (\cite{ATLAS-TDR-29} Table 6.4) an average EF output rate of 10~kHz at $\mathcal{L}=7.5\times10^{34}\,\mathrm{cm^{-2}s^{-1}}$, corresponding to approximately 200 inelastic proton-proton collisions per bunch crossing, is expected. This rate includes the main physics stream(s) but does not include detector calibration or Trigger-level Analysis (TLA) streams. TLA streams typically have a very high rate but with very small event sizes of the order of 10~kB. Based on data from Run-2, those additional streams contribute about 20\% of the total bandwidth and storage at the Tier-0. 
+
+The estimated event size for each detector system at the ultimate Phase-II luminosity is listed in Table~\ref{tab:event_size} resulting in a total average event size of 3.6~MB.
+This is a significant reduction compared to the 5.2~MB listed in the TDAQ TDR (\cite{ATLAS-TDR-29}, Table 3.5) due to the reduction in the Pixel event size in the latest iteration of the readout chip~\cite{ATL-ITK-INT-2019-001}. The event size of the new High-Granularity Timing Detector (HGTD) has been taken from Figure~4.26 in Ref.~\cite{ATLAS-HGTD-TP}.
+Allowing additional bandwidth for calibration and TLA streams, the total bandwidth to Tier-0 is approximately 45~GB/s.
+
+\begin{table}[htb!]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|c|c|c||c|} \hline
+         Detector & Pixel & Strip & HGTD  & LAr   & Tile  & Muon  & TDAQ  & Total \\ \hline
+         MB/event & 0.6   & 0.5   & 0.2   & 0.7   & 0.2   & 0.8   & 0.6   & 3.6 \\ \hline
+    \end{tabular}
+    \caption{Expected average event size at $\langle\mu\rangle$=200. Forward detectors are not listed since the associated event size is negligible.}
+    \label{tab:event_size}
+\end{table}
+
+
+\subsection{Tier-0}
+
+It is clear that the Tier-0 will have to provide sufficient network bandwidth and storage capacity (both disk and tape) to enable basic RAW data recording, archival, and export to Tier-1/2 centres. Section~\ref{sec:tier0_network} presents estimates on the Tier-0 network capacity for Run 4.
+
+Performing the processing of data at Tier-0 in Run 4, in the way it was done in Runs 1 and 2, and will be done in Run 3, will require a substantial upgrade of the Tier-0, in the most optimistic scenarios by factors of 4--6. Section~\ref{sec:tier0_capacity} gives estimates on the required CPU capacity, depending on the reconstruction timing estimates of Section~\ref{sec:reco}. How much of such a Tier-0 upgrade will be affordable, is not yet known. Depending on the available processing capacity at Tier-0, various processing scenarios are discussed in Section~\ref{sec:tier0_workflows}.
+
+\subsubsection{Tier-0 Network Traffic}
+\label{sec:tier0_network}
+
+Assumptions: 
+
+\begin{itemize}
+  \item RAW data recording: 10~kHz physics rate, ca.\ 3.6~MB full physics event size (estimate for $\langle\mu\rangle$=200, cf.\ Table~\ref{tab:event_size} above), 20\% of bandwidth occupied by non-physics streams (calibration, TLA, etc.); 
+  \item 70\% LHC time in stable beams;
+  \item RAW data backed up to tape and exported to Tier-1s as fast as possible (``live'');
+  \item Tier-0 processing spread over fill and inter-fill periods ($\Rightarrow$ scale factor 0.7 applied on data rates);
+  \item Reconstruction outputs: AOD of 350~kB/event, total data volume of other products (DRAW, performance DESD, DAOD, etc.) not more than that of AOD; 
+  \item Merging of reconstruction outputs in a separate, subsequent step;
+\end{itemize}
+
+Table~\ref{tab:tier0_rates} shows the estimates on the required Tier-0 network traffic and bandwidth.
+
+\begin{table}[htb!]
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    {\bf Activity}                 & {\bf EOS Read}    & {\bf EOS Write}   & {\bf CTA Read} & {\bf CTA Write}      \\\hline\hline
+    DAQ: SFO $\rightarrow$ EOS     & --                & 43~GB/s           & --             & --                   \\\hline
+    Tier-0: Reconstruction         & 25~GB/s           & \phantom{4}5~GB/s & --             & --                   \\\hline
+    Tier-0: Merging                & \phantom{4}5~GB/s & \phantom{4}5~GB/s & --             & --                   \\\hline
+    DDM: Export to Tier-1s         & 48~GB/s           & --                & --             & --                   \\\hline
+    DDM: EOS $\rightarrow$ CTA/EOS & 48~GB/s           & --                & --             & 48~GB/s              \\\hline
+    CTA: Tape Backup               & --                & --                & 48~GB/s        & 48~GB/s              \\\hline\hline
+    {\bf Total}                    & {\bf 126~GB/s}    & {\bf 53~GB/s}     & {\bf 48~GB/s}  & {\bf (48 + 48)~GB/s} \\\hline
+  \end{tabular}
+\end{center} 
+\caption{Estimated Tier-0 network traffic for Run~4.}
+\label{tab:tier0_rates}
+\end{table}
+
+
+The figures do not contain contingencies. To be on the very safe side, one might want to add extra capacity of 30--50\%. On the other hand, a fraction of 70\% in stable beams is a very optimistic assumption that already leaves some headroom.
+
+\subsubsection{Tier-0 CPU Capacity}
+\label{sec:tier0_capacity}
+
+Assumptions: 
+
+\begin{itemize}
+  \item 10~kHz physics rate;
+  \item 80\% of CPU used for physics processing, 20\% for everything else (calibration/alignment, DQM, merging, etc.);
+  \item 70\% LHC time in stable beams ($\Rightarrow$ 7~kHz effective reconstruction rate required);
+  \item Reconstruction timing estimates according to Section~\ref{sec:reco}, Table~\ref{tab:Phase2CPU}; 
+\item Tier-0 cluster capacity at the end of Run~2 (2018): 430~kHS06.
+\end{itemize}
+
+Table~\ref{tab:tier0_cpu} shows the estimates on the required Tier-0 CPU capacity.
+
+\begin{table}[htb!]
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    {\bf Pile-up}             & {\bf Reco.\ Time/Event} & {\bf Required CPU Capacity} & {\bf CPU Capacity wrt.\ Run~2} \\\hline\hline
+    $\langle\mu\rangle =$~140 & 402 (215)~HS06$\cdot$s  & 3500 (1900)~kHS06           & \phantom{1}8.2 (4.4)           \\\hline
+    $\langle\mu\rangle =$~200 & 584 (295)~HS06$\cdot$s  & 5100 (2600)~kHS06           & 11.9 (6.0)                     \\\hline
+  \end{tabular}
+\end{center} 
+\caption{Estimated Tier-0 CPU capacity for Run~4, for two scenarios: one based on Run-2 reconstruction, the other (in parentheses) on the target performance after a successfully carried out software upgrade programme.}
+\label{tab:tier0_cpu}
+\end{table}
+
+
+\subsubsection{Considerations on Tier-0 Workflows in Run~4}
+\label{sec:tier0_workflows}
+
+Prompt processing at Tier-0 for calibration, alignment, beam-spot determination, data-quality montitoring (DQM), etc. will always stay one of the Tier-0 proper responsibilities. This kind of processing is time critical, it has to be accomplished within a time window of 48 hours (the so-called ``calibration loop''), and requires fast feedback and turnaround. It may also rely heavily on the local infrastructure, such as live DCS information from local conditions databases. Therefore this can only be done at Tier-0, the Grid is not suitable. 
+
+In Run 2, O(10\%) of CPU resources were used for calibration- and alignment-related processing. One may expect that the total capacity needed to perform all the calibration processing will stay about the same. In any case it will not have to scale up 1:1 proportionally to the physics rate.   
+
+In Run 3, it is foreseen that the Tier-0 will have sufficient capacity to perform all the bulk processing ({\it physics\_Main} stream), like in previous runs. Bulk processing is launched after the 48-hours' calibration loop. So far it has been a strong requirement (or preference) by the Data Preparation and Physics communities to do bulk processing in this way. The advantage is the fast availability of validated, uniform outputs which are directly useable for physics production. Accompanying DQM and other, e.g., CP-related, processing which relies on the full available statistics and often makes use of the local CERN infrastructure can be performed promptly as well. For instance, DQM results are used for run-by-run sign-off and the compilation of Good Run Lists. 
+
+Already since Run 2, the Tier-0 batch farm has been configured in a way that its CPU resources can be shared between Tier-0 and Grid processing. In periods of data taking and processing, Tier-0 runs with priority, else the Grid takes over. This makes sure that the available, sizeable capacity is always efficiently used. Therefore, if for Run 4 and beyond the Tier-0 capacity were extended according to Table~\ref{tab:tier0_cpu}, such that all prompt and bulk processing could be performed there, there would be no risk of resources running idle or being wasted in periods of no data taking -- they would just be used by the Grid. 
+ 
+From today's perspective, based on existing workflows, at least some amount of statistically representative data (comparable to today's {\it physics\_Main}) would need to be reconstructed promptly for DQ assessment, CP studies, monitoring, etc. 
+
+If resources at Tier-0 were not sufficient to do all the prompt processing, one could envisage to split off 10--20\% of data to process at Tier-0 for DQ (something like a {\it ``physics\_Monitoring''} stream) and do the rest across the Grid. One could even consider an LHCb-like model in which RAW data for selected streams are deleted after prompt reconstruction, in order to save on storage. However, the 10--20\% of extra bandwidth and storage, even for transient {\it ``physics\_Monitoring''} data, might be an issue that needed to be addressed.
+
+In case resources at Tier-0 were not sufficient to do all the prompt processing, ``spill-over'' to the Grid would be an option that could be explored.
+
+Spill-over was demonstrated to work, functionally (on {\it physics\_Main} for some runs, for validation purposes), and in routine operation in 2018 (on {\it physics\_BphysLS} stream, ca.\ 100~Hz, ca.\ 10\% of {\it physics\_Main}). Tasks were defined at Tier-0 and injected through a python API into the Grid Production System. Reconstruction and merging were run on the Grid, outputs (AOD, HIST) had to be shipped back to CERN for further special (DQM, CP) processing at Tier-0 that could not be done on the Grid. Back-feeding Grid outputs into Tier-0 was tedious, as Tier-0 and Grid Production Systems are separate entities. 
+
+Tier-0 looks to be the natural place to manage, define, and orchestrate the spill-over (as it knows about data availability, readiness of calibrations and software; it is the hub between T/DAQ, calibration/alignment groups, Data Preparation, and distributed computing communities; etc.). If resources at Tier-0 were so short, however, that a dominant fraction of bulk processing would need to be performed on the Grid, it would make more sense to move the responsibility for organising and executing bulk processing to the Reprocessing and Grid Production domains altogether. 
+
+In all those scenarios, more development towards an easier interaction between the Tier-0 and Grid Production Systems, and a better integration of the respective monitoring tools and interfaces, would be desirable, in order to fully and efficiently exploit the potential of the spill-over. This could be addressed and exercised in Run 3 already, however. 

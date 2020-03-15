@@ -1,0 +1,148 @@
+\begin{itemize}
+\item Justification
+
+Due to the scaling limits of traditional computational
+architectures, the next generation of HPC centers are
+increasingly investing in heterogeneous architectures as
+exemplified by the use of GPUs in the currently largest
+supercomputers, and in the plans of practically every upcoming HPC
+center. This trend will only increase as
+the demand for higher FLOP counts is confronted by the energy
+demands of traditional CPUs. Funding agencies have also indicated
+that allocations on these machines will only be given if codes
+make use of the GPUs. ATLAS currently spends 15 \% of its
+computational budget on HPCs, and this fraction is expected to
+increase as Grid resources, which are traditionally CPU dominant,
+are unlikely to increase at the same rate as our projected
+computational needs. As a result, ATLAS needs to develop
+code that can run on GPUs and other non-traditional accelerators.
+
+\item Use of Accelerators in HPC
+
+\item Workflows that are suited to accelerators
+While end-to-end workflows that are suited to accelerators are
+few and far between in HEP, there do exist some that are better
+suited than others. Event Generation, using such packages as
+Madgraph and sherpa would function well in the GPU environment, and
+programs are underway to convert them. Any workflow that spends a 
+significant fraction of time doing machine learning tasks are
+also ideal for accelerators, and there exist many ML packages that
+have GPU backends which are transparent to the user. Individual
+tasks that are inherently very parallel in nature, such as track
+seeding or calorimeter clustering will also function very well
+on a GPU. In the online
+environment, GPUs can also be effectively used, as long as a
+significant fraction of the trigger chain is kept on the GPU, 
+minimizing the data conversion and transmission penalties.
+
+\item EDM changes for efficient accelerator communication
+
+\item Investigation of various languages
+
+The next generation of DOE HPCs are all based on different
+accelerator architectures: Aurora will use Intel X\textsuperscript{e} GPUs,
+Frontier will have AMD GPUs. Perlmutter, Piz Daint, and MareNostrum 
+are provisioned with NVidia hardware. Each GPU
+manufacturer has its own preferred compiler to prepare code for
+executing on its hardware: NVidia uses CUDA, Intel uses
+SyCL (dpc++), and AMD uses HIP.  None of these compilers will
+currently produce binaries capable of running on more than one type of
+hardware.  Future architectures will likely be even more exotic,
+with incorporation of FPGAs as well as GPUs.  In general the
+lifetime of an HPC is 5 years, with new centers coming online in
+a staggered fashion, meaning that new architectures will become
+available every few years. Given the size of the ATLAS software
+repository, and the number of available software developers,
+ATLAS cannot afford to re-write its software stack for every new
+HPC. Furthermore, even if multiple versions of the code were
+available for each architecture, the effort to validate each new
+version would be onerous. We must instead find portability
+solutions that permit the same code to run on all architectures.
+
+\begin{itemize}
+
+\item {\bf SyCL}
+SYCL is a C++ abstraction layer on top of OpenCL (Intel is
+working on an LLVM-based SYCL compiler), allowing for
+heterogeneous device support. While originally written explicitly
+for Intel hardware, SYCL is currently supported at various levels
+on several hardware platforms, including AMD GPUs, Intel GPUs,
+some NVIDIA GPUs, and even FPGAs.  From the point of view of
+exascale systems, the use of SYCL is particularly significant as
+part of Intel's One API project. There are several points of
+similarity between Kokkos and SYCL, a compact description and
+comparison of the two can be found in (citation!).
+
+\item {\bf OpenMP / OpenACC}
+OpenMP has been widely used as a portable multi-threading
+programming model on multi-core and many-core CPUs. Since OpenMP
+4.0, it has added support for accelerator offloading. OpenACC uses
+a similar style of compiler directives, but has been explicitly 
+developed from the start for accelerator usage. Many major
+hardware vendors (NVIDIA, AMD, Intel, IBM, etc.) are on the
+OpenMP standards committee, and have been actively developing
+their compilers to support OpenMP offloading. Such wide vendor
+support make OpenMP and OpenACC viable candidates for performance
+portability. While its support for C++ offloading remains
+challenging due to deep copy issues, the expected availability of
+unified CPU-GPU memory on the exascale systems, and OpenMP 5's
+support of it, will likely make it possible to use OpenMP and OpenACC
+offloading in C++ applications.
+
+\item {\bf Kokkos}
+Designed as a C++ performance portability programming abstraction
+layer, Kokkos supports different hardware platforms through
+its various back ends, while the programming interface retains
+native C++ features. Kokkos supports flexible memory management,
+including memory layout transformation, which may be necessary
+to get the above-mentioned C++-based case studies to run on
+accelerators. Kokkos is a part of ECP's software technology
+program with the aim of supporting exascale system
+architectures. Substantial work is ongoing (\textasciitilde 30 dedicated
+developers) and it has a close connection to the C++ standards
+committee. With the use of Kokkos, the burden of the
+architecture-dependent programming will be relieved from the
+scientific software developers.
+
+\item {\bf RAJA}
+In the same spirit as Kokkos, RAJA is a set of C++ software
+abstractions to enable architecture portability for (primarily
+loop-based) HPC applications with the goals of minimally
+disrupting current applications and allowing for development of
+new applications. Data management with RAJA is handled via the
+CHAI library, based on an array-style interface. RAJA was
+originally developed to support HPC codes at Lawrence Livermore
+National Laboratory and is also part of the ECP software effort.
+
+\item {\bf Numba}
+For the more Python-centric workloads in the Cosmic Frontier, and
+the increasing number of Python modules in particle physics
+workflows, Numba is a useful programming technology to run
+Python code on accelerators. With its built-in Just-In-Time
+compiler support, it is possible to generate codes at run time
+for different accelerator architectures to achieve performance
+portability.
+
+\end{itemize}
+
+\item Framework integration
+While end-to-end workflows on the GPU will make best usage of the
+hardware, there is no reason that individual Algorithms, be they
+Reconstruction or Simulation, cannot make good use of GPUs, as long
+as they do not spend more time converting data structures and transferring them to the GPU than the
+original runtime of the Algorithm. As long as the CPU hardware thread that offloads the GPU Algorithm can be retasked to do other work while the kernel is executing on the GPU, total throughput of the job will increase due to the latency hiding nature of the framework. If just a few slow Algorithms can be converted to use GPUs, major gains in total throughput can be realized. In order to simplify integration of user kernels with Athena, we must provide infrastructure to 
+\begin{itemize}
+    \item efficiently manage GPU kernel resources such as CUDA streams
+    \item manage GPU memory, possibly via custom allocators
+    \item prepare data for offloading from the CPU, and reconvert it when the kernel has completed
+    \item integrate kernel compilation into the build environment, via CMake directives for CUDA, dpc++, Kokkos, Alpaka, and other languages
+\end{itemize}
+
+\item Validation 
+Will be hard....
+
+\item Synergy with HLT
+yes
+
+
+\end{itemize}

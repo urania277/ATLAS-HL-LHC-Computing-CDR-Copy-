@@ -1,0 +1,151 @@
+\documentclass{article}[11pt]
+\usepackage[ascii]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,letterpaper,lmargin=1in,rmargin=1in,tmargin=1in,bmargin=1in}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{24pt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[compact]{titlesec}
+\usepackage{floatflt}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{floatrow}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{color}
+\usepackage{pdfpages}
+
+
+\usepackage{mathptmx}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage{array}
+\usepackage{supertabular}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{enumitem}
+\usepackage{xspace}
+\usepackage{upgreek}
+\usepackage{microtype}
+\usepackage{lineno}
+%\linenumbers
+\usepackage{stackrel}
+\usepackage{accents}
+% Markus
+\usepackage{verbatim}
+% Riccardo
+\usepackage{todonotes}
+
+% hyperref likes to be last
+\usepackage[colorlinks, urlcolor=blue, linkcolor=blue]{hyperref}
+\makeatletter
+\newcommand\arraybslash{\let\\\@arraycr}
+\makeatother
+\setlength\tabcolsep{1mm}
+
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{1.0ex plus 0.5ex minus 0.2ex}
+%
+% Macros for this paper go here.
+%
+\renewcommand\arraystretch{1.3}
+\newcommand{\cpp}{C\kern-0.15ex{+}\kern-0.1ex{+}\xspace}
+\newcommand{\art}{\textit{art}\xspace}
+\newcommand{\pythia}{\textsc{Pythia8}\xspace}
+\newcommand{\nova}{NOvA\xspace}
+
+%%% Macros for comments in the proposal (can be deleted later)
+\newcommand{\jim}[1]{[{\sc Jim:} {\color{green}\textit{#1}}]}
+
+
+\begin{document}
+
+%\section{PROJECT SUMMARY / ABSTRACT}
+%\input{project_summary}
+
+%\section{DOE COVER PAGE}
+\input{cover_page}
+\newpage
+
+\tableofcontents
+\newpage
+
+\setcounter{page}{1}
+
+
+\section{Introduction}
+%Davide+Paolo
+\input{introduction.tex}
+
+\section{Overview}
+\input{overview.tex}
+
+\section{Core Software}
+%Attila+Charles+Andi+Vakhp+Scott
+\input{core.tex}
+
+\section{Detector Description}
+%Vakho+Andrea dA+Joe B
+\input{detdescr.tex}
+
+\section{Event Generators}
+%Simone+Christian
+\input{generators.tex}
+
+\section{Simulation}
+% John, Paolo
+\input{simulation.tex}
+
+\section{Reconstruction}
+% Markus, Ed, Peter L, Caterina
+\input{reconstruction.tex}
+
+\section{Visualization}
+% Riccardo Bianchi <riccardo.maria.bianchi@cern.ch>, Sergei Chekanov <chekanov@anl.gov>
+\input{visualization.tex}
+
+\section{Analysis model}
+% Lukas, Alison, Gordon
+\input{analysis.tex}
+
+\section{Resource estimates}
+%Davide, Armin, Giulio
+\input{resources.tex}
+
+%\section{The role of Machine Learning}
+% Dan, Amir, Lukas
+%\input{ML.tex}
+
+\section{Tier-0 and HLT farms, CERN infrastructure}
+%Armin, Frank
+\input{hlt-tier0.tex}
+
+\section{Evolution of distributed computing}
+%Oxana, Rod, Kaushik + DDM group
+\input{adc.tex}
+
+%\section{Evolution of database}
+% Elizabeth, Nurcan, Dario
+%\input{database.tex}
+
+%\section{Physics impact of the various scenarios}
+% This may or may not be needed, as it could be embedded in the various sections. 
+%Davide and Paolo to propose scenarios
+%Simone, Sara, Christian
+
+\section{Effort estimates and high level milestones}
+% Ale and James
+\input{effort.tex}
+
+\bibliography{bib/ATLAS.bib,bib/misc.bib,bib/visualization.bib,bib/physics.bib}
+\bibliographystyle{plain}
+
+\end{document}

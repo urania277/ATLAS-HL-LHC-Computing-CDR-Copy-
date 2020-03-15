@@ -1,0 +1,23 @@
+Machine learning will play an increasing role in LHC data analysis in the coming years. Applications for machine learning range from mature algorithms for particle reconstruction (cite b-tagging, tau-id, jet tagging, electron calibration) and event selection (cite overview, too many to count) to developing projects such as generative neural networks for simulation and interpolation over high-dimensional BSM model spaces. Given the wide range of potential applications, estimates of expected computing requirements come with a large error margin.
+
+At the moment the computing demands for machine learning are relatively modest.... (Training is G/CPU intensive, inference is a single pass algorithm which is relatively fast) (ideally get some numbers on a typical training time)
+
+(something about how the regular data structures we use in ML are conducive to vectorization / GPUs, thus might be cheaper than iterative algorithms. This might justify using a lot more GPU / ML in reconstruction)
+
+As Machine Learning is a research field mainly driven by groups outside of particle physics, it is expected that the most performant frameworks for developing ML algorithms are developed in their respective communities. It is therefore prudent to maintain a clear boundary between training and inference frameworks. Only the latter needs to be requires integration into most HEP software and an emerging industry standard for sharing ML models is e.g. ONNX.
+
+
+
+The basis of modern deep learning is the notion of numeric programs for which free parameters can be determined using gradient-based learning. Crucially, gradient of these programs can be efficiently computed through automatic differentiation techniques. While the future developments in ML are difficult to predict it is expected that the notion of \emph{differentiable programs} will remain foundational. In HEP, a number of projects have already begun exploiting autodifferentiatino (Pierini etc al for diffable likelihoods, pyhf, Tensorfloow fits in CMS) enabling a more direct integration of ML methoods with HEP through e.g. end-to-end learning.
+
+The role of ML at the HL-LHC. This is where we try to form a more consistent picture of how all the other sections fit together.
+\begin{itemize}
+    \item applications
+    \item computing overhead
+    \begin{itemize}
+        \item training
+        \item inference
+    \end{itemize}
+    \item Industry tools and resources
+    \item Hardware and GPUs
+\end{itemize}

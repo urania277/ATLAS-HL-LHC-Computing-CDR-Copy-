@@ -1,0 +1,36 @@
+%Here we talk about event generators
+During the course of the LHC Run~2 phase, the ATLAS experiment has devoted between 10\% and 15\% of its computing resources to Monte Carlo event generation, which translates to a total of about 70 billion events produced at an average speed of 1.7s per event.
+%New Sherpa ttbar NLO-merged is 16.7s/event
+Run~4 will see the need for high-statistics inclusive samples for precision SM measurements, and to efficiently populate the high jet-multiplicity as well as exclusive phase spaces explored by new-physics searches. 
+All this while retaining the best available accuracy,
+which we foresee will be next-to-next-to-leading order (NNLO) for samples inclusive in additional radiation, 
+and next-to-leading order (NLO) for samples with high parton multiplicities; 
+both interfaced to leading-logarithmic parton showers.
+The need to compute virtual corrections, and the introduction of subtraction terms which are needed to 
+take care of the divergences appearing at orders beyond the leading one, makes these configurations very slow to compute and introduce negatively weighted events.
+This calls for the developments of mitigation strategies to reduce the  computing resource usage of event generators without undermining the desired precision nor accuracy of the calculations. 
+%which can significantly reduce the statistical power of a MC sample.
+
+%For essentially all (ATLAS) MC samples it is vital to consider the weight of each event, as weights are rarely equal for all events. Specifically, events may be up/down-weighted in more/less interesting regions of phase space or the unweighting step in the event generation may lead to some non-unity weights. Also NLO generators often generate events with negative weights. It is important to correctly calculate the statistical uncertainties in the presence of weights. Especially the presence of very large or negative weights is often a cause for confusion and is thus discussed more explicitly below.
+
+
+
+\subsection{Ongoing developments with an impact for Run4}
+\begin{itemize}
+\item A significant reduction in event generation computing resources can be obtained with a careful optimisation of the physics choices in an event generator. For the Run-2 ATLAS production of Sherpa NLO-merged $V$+jets events, the usage of a different clustering scale allowed for a  speed-up of event generation by about a factor of two with no visible impact in modelling. Similarly, using an approximate colour treatment  reduced the negative weight fraction from about 20\% to about 10\%.
+\item Large resources are often spent on populating extreme regions of phase space with inclusive samples. More sophisticated methods have now become available in most event generators to bias the event generation as a function of a kinematic quantity of interest.
+While this procedure typically makes the event generation slower, it allows for a significant reduction in the number of events that need to be generated, and subsequently be stored.
+\item  A large number of MC samples are typically produced to evaluate systematic variations. Most matrix-element generators now allow to compute uncertainties from scales and PDFs through a reweighting technique, avoiding the need to generate explicit variation samples. Similar approaches are being adopted to compute variations of parton-shower parameters. For certain algorithmic variations that cannot be achieved through reweighting, workflows are being developed to save intermediate parton-level results, allowing them to be passed through alternative parton-shower or hadronisation models. A new technique is currently in development, which employs multi-variate classifiers to derive a multi-dimensional reweighting to algorithmic variations that traditionally would have had to be calculated explicitly.
+This approach would not avoid the need to generate the alternative MC sample, but would save resources otherwise spent on the simulation and storage of these alternative variation samples.
+\item The sharing of samples with other LHC experiments (mainly relevant for ATLAS and CMS) can potentially save a factor of two in CPU resources. This is being considered in particular for the most-expensive part of the high-precision multi-parton calculations. This has the added benefit of an increased level of scrutiny of the expensive parton-level calculations, by multiple experiments as well as the generator developers,
+while leaving each individual experiment the freedom of choosing specific parton showers with their preferred settings for the subsequent steps of the event generation chain. More recently, new workflows allocations have been developed that achieve an efficient generation of very high multiplicity parton-level events using High Performance Computing clusters. This opens the possibility of producing these samples using joint HPC allocations by LHC collaborations.
+\item Porting pieces of the event generation to accelerators (typically relying on old algorithms (VEGAS, BASES). Attempts to port them to GPUs have been done, with unclear gains. Recently interest within ATLAS to revive those efforts.
+
+
+%\item Development of strategies to reduce the negative weighted event fraction in NLO and NLO-merged configurations (Sherpa, MG5, H7) -> reduce number of events to be generated/simulated/stored
+
+
+%\item More efficient format for storage of parton-level event files (HDF5)
+%\item (Moved from Simulation section) sharing EVNT with CMS (issues/objections), more MadGraph?, tuning per family of analyses. Potential early success for GPU porting
+\end{itemize}
+

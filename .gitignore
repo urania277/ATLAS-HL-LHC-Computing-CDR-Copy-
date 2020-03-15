@@ -1,0 +1,12 @@
+*.bbl
+*.aux
+*.blg
+*.fls
+*.log
+*.out
+*.fdb_latexmk
+.proposal.lb
+ExaTrkX_summary.pdf
+ExaTrkX_proposal.pdf
+ExaTrkX_proposal.dvi
+ExaTrkX_proposal.toc
